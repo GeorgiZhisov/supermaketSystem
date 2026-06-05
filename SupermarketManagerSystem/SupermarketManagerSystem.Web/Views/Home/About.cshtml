@@ -1,1 +1,22 @@
-<h1>About</h1>
+@{ ViewData["Title"] = "About"; }
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="fw-bold mb-4"><i class="bi bi-info-circle text-success me-2"></i>About SupermarketManager</h1>
+            <div class="card p-4 mb-4">
+                <h5 class="fw-bold">Project Overview</h5>
+                <p>SupermarketManager is a web-based management system built with ASP.NET Core 8 MVC, designed for supermarket managers to oversee day-to-day operations including product inventory, supplier relationships, employee records, and stock replenishment.</p>
+            </div>
+            <div class="card p-4 mb-4">
+                <h5 class="fw-bold">Technologies Used</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><i class="bi bi-check2 text-success me-2"></i>ASP.NET Core 8 MVC</li>
+                    <li class="list-group-item"><i class="bi bi-check2 text-success me-2"></i>Entity Framework Core + SQL Server</li>
+                    <li class="list-group-item"><i class="bi bi-check2 text-success me-2"></i>ASP.NET Core Identity</li>
+                    <li class="list-group-item"><i class="bi bi-check2 text-success me-2"></i>Bootstrap 5 + Bootstrap Icons</li>
+                    <li class="list-group-item"><i class="bi bi-check2 text-success me-2"></i>NUnit + Moq (Unit Tests)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,1 +1,113 @@
-<h1>Supermarket Manager System</h1>
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="bg-success bg-gradient text-white py-5 mb-5" style="background: linear-gradient(135deg, #1a6b3c, #145530) !important;">
+    <div class="container py-3">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="bi bi-shop me-3"></i>Supermarket Manager
+                </h1>
+                <p class="lead mb-4">A complete solution for managing your supermarket inventory, staff, suppliers and restock operations — all in one place.</p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a asp-controller="Products" asp-action="All" class="btn btn-warning btn-lg fw-semibold px-4">
+                        <i class="bi bi-box-seam me-2"></i>Browse Products
+                    </a>
+                    @if (!User.Identity?.IsAuthenticated ?? true)
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-light btn-lg px-4">
+                            <i class="bi bi-person-plus me-2"></i>Get Started
+                        </a>
+                    }
+                </div>
+            </div>
+            <div class="col-lg-5 text-center d-none d-lg-block">
+                <i class="bi bi-cart-check" style="font-size: 9rem; opacity: .15;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="card text-center p-4 h-100">
+                <div class="mb-3">
+                    <i class="bi bi-box-seam text-success" style="font-size: 2.5rem;"></i>
+                </div>
+                <h5 class="fw-bold">Product Management</h5>
+                <p class="text-muted small">Track all products with barcodes, pricing, stock levels, and categories.</p>
+                <a asp-controller="Products" asp-action="All" class="btn btn-outline-success btn-sm mt-auto">View Products</a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center p-4 h-100">
+                <div class="mb-3">
+                    <i class="bi bi-tags text-primary" style="font-size: 2.5rem;"></i>
+                </div>
+                <h5 class="fw-bold">Categories</h5>
+                <p class="text-muted small">Organize products into meaningful categories for easy navigation.</p>
+                <a asp-controller="Categories" asp-action="All" class="btn btn-outline-primary btn-sm mt-auto">View Categories</a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center p-4 h-100">
+                <div class="mb-3">
+                    <i class="bi bi-truck text-warning" style="font-size: 2.5rem;"></i>
+                </div>
+                <h5 class="fw-bold">Suppliers</h5>
+                <p class="text-muted small">Manage supplier contacts and track product sourcing relationships.</p>
+                <a asp-controller="Suppliers" asp-action="All" class="btn btn-outline-warning btn-sm mt-auto">View Suppliers</a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center p-4 h-100">
+                <div class="mb-3">
+                    <i class="bi bi-arrow-repeat text-danger" style="font-size: 2.5rem;"></i>
+                </div>
+                <h5 class="fw-bold">Restock Requests</h5>
+                <p class="text-muted small">Submit and track restocking requests for low-inventory products.</p>
+                <a asp-controller="RestockRequests" asp-action="All" class="btn btn-outline-danger btn-sm mt-auto">View Requests</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-4 mb-5">
+        <h4 class="fw-bold mb-3"><i class="bi bi-graph-up-arrow text-success me-2"></i>Live Inventory Status</h4>
+        <p class="text-muted mb-3">Check low-stock alerts in real time via our API:</p>
+        <div class="d-flex gap-2 flex-wrap mb-3">
+            <button class="btn btn-success" onclick="loadLowStock()">
+                <i class="bi bi-exclamation-triangle me-1"></i>Load Low-Stock Products
+            </button>
+            <button class="btn btn-outline-secondary" onclick="clearResults()">Clear</button>
+        </div>
+        <div id="lowStockResults"></div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+async function loadLowStock() {
+    const div = document.getElementById('lowStockResults');
+    div.innerHTML = '<div class="text-muted"><span class="spinner-border spinner-border-sm me-2"></span>Loading...</div>';
+    try {
+        const resp = await fetch('/api/products/low-stock');
+        const data = await resp.json();
+        if (!data.length) {
+            div.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle me-2"></i>All products are well stocked!</div>';
+            return;
+        }
+        let html = '<div class="table-responsive"><table class="table table-bordered table-hover mb-0"><thead><tr><th>Product</th><th>Category</th><th>Stock</th><th>Min. Level</th></tr></thead><tbody>';
+        data.forEach(p => {
+            html += `<tr class="table-warning"><td>${p.name}</td><td>${p.categoryName}</td><td><span class="badge bg-danger">${p.stockQuantity}</span></td><td>${p.minimumStockLevel}</td></tr>`;
+        });
+        html += '</tbody></table></div>';
+        div.innerHTML = html;
+    } catch (e) {
+        div.innerHTML = '<div class="alert alert-danger">Failed to load data.</div>';
+    }
+}
+function clearResults() { document.getElementById('lowStockResults').innerHTML = ''; }
+</script>
+}

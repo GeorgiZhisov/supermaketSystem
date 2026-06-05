@@ -1,1 +1,14 @@
-<h1>Delete Product</h1>
+@using SupermarketManagerSystem.Services.Models
+@model ProductServiceModel
+@{ ViewData["Title"] = "Deactivate Product"; }
+<div class="container py-4">
+    <div class="card p-4 border-danger" style="max-width:550px;">
+        <h4 class="text-danger fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Deactivate Product</h4>
+        <p>Are you sure you want to deactivate <strong>@Model.Name</strong>? It will no longer appear in the active product list.</p>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-flex gap-2">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger"><i class="bi bi-trash me-1"></i>Yes, Deactivate</button>
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

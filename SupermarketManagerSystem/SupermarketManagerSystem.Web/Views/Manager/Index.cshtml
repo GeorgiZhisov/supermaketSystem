@@ -1,1 +1,0 @@
-<h1>Manager Dashboard</h1>

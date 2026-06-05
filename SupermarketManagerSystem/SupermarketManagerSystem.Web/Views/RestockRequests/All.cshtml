@@ -1,0 +1,65 @@
+@model IEnumerable<SupermarketManagerSystem.Web.ViewModels.RestockRequestViewModel>
+@{ ViewData["Title"] = "Restock Requests"; }
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="bi bi-arrow-repeat text-danger me-2"></i>Restock Requests</h2>
+        <a asp-action="Add" class="btn btn-danger"><i class="bi bi-plus-lg me-1"></i>New Request</a>
+    </div>
+    <div class="mb-3 d-flex gap-2">
+        <a asp-action="All" class="btn btn-sm btn-outline-secondary @(ViewBag.StatusFilter == null ? "active" : "")">All</a>
+        @foreach (var s in new[] { "Pending", "Approved", "Received", "Cancelled" })
+        {
+            <a asp-action="All" asp-route-status="@s"
+               class="btn btn-sm btn-outline-secondary @(ViewBag.StatusFilter == s ? "active" : "")">@s</a>
+        }
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>Product</th><th>Supplier</th><th>Qty</th><th>Est. Cost</th><th>Status</th><th>Requested</th><th>Actions</th></tr></thead>
+            <tbody>
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@r.ProductName</td>
+                        <td>@(r.SupplierName ?? "—")</td>
+                        <td>@r.RequestedQuantity</td>
+                        <td>@(r.EstimatedCost?.ToString("C") ?? "—")</td>
+                        <td>
+                            @{
+                                var badgeClass = r.Status switch {
+                                    "Pending" => "bg-warning text-dark",
+                                    "Approved" => "bg-primary",
+                                    "Received" => "bg-success",
+                                    "Cancelled" => "bg-secondary",
+                                    _ => "bg-secondary"
+                                };
+                            }
+                            <span class="badge @badgeClass">@r.Status</span>
+                        </td>
+                        <td>@r.RequestedOn.ToString("dd MMM yyyy")</td>
+                        <td>
+                            @if (User.IsInRole("Administrator") && r.Status == "Pending")
+                            {
+                                <form asp-action="Approve" asp-route-id="@r.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-success me-1" title="Approve"><i class="bi bi-check-lg"></i></button>
+                                </form>
+                                <form asp-action="Cancel" asp-route-id="@r.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel"><i class="bi bi-x-lg"></i></button>
+                                </form>
+                            }
+                            @if (User.IsInRole("Administrator") && r.Status == "Approved")
+                            {
+                                <form asp-action="MarkReceived" asp-route-id="@r.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-primary" title="Mark Received"><i class="bi bi-box-arrow-in-down"></i></button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,1 +1,68 @@
-<h1>Product Details</h1>
+@using SupermarketManagerSystem.Services.Models
+@model ProductServiceModel
+@{ ViewData["Title"] = Model.Name; }
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Products" asp-action="All">Products</a></li>
+            <li class="breadcrumb-item active">@Model.Name</li>
+        </ol>
+    </nav>
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h2 class="fw-bold mb-0">@Model.Name</h2>
+                    <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary") fs-6">
+                        @(Model.IsActive ? "Active" : "Inactive")
+                    </span>
+                </div>
+                <p class="text-muted">@(Model.Description ?? "No description available.")</p>
+                <div class="row g-3 mt-2">
+                    <div class="col-sm-6"><strong>Barcode:</strong> <code>@Model.Barcode</code></div>
+                    <div class="col-sm-6"><strong>Category:</strong> @Model.CategoryName</div>
+                    <div class="col-sm-6"><strong>Selling Price:</strong> <span class="text-success fw-bold">@Model.Price.ToString("C")</span></div>
+                    <div class="col-sm-6"><strong>Cost Price:</strong> @Model.CostPrice.ToString("C")</div>
+                    <div class="col-sm-6"><strong>Stock:</strong>
+                        @if (Model.IsLowStock)
+                        {
+                            <span class="badge bg-danger ms-1">@Model.StockQuantity @Model.Unit <i class="bi bi-exclamation-triangle"></i></span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success ms-1">@Model.StockQuantity @Model.Unit</span>
+                        }
+                    </div>
+                    <div class="col-sm-6"><strong>Min. Stock Level:</strong> @Model.MinimumStockLevel</div>
+                    <div class="col-sm-6"><strong>Supplier:</strong> @(Model.SupplierName ?? "—")</div>
+                </div>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div class="mt-4 d-flex gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                            <i class="bi bi-pencil me-1"></i>Edit
+                        </a>
+                        @if (User.IsInRole("Administrator"))
+                        {
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">
+                                <i class="bi bi-trash me-1"></i>Deactivate
+                            </a>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-lg-4">
+            @if (Model.IsLowStock)
+            {
+                <div class="alert alert-warning">
+                    <h6 class="fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Low Stock Alert</h6>
+                    <p class="mb-2 small">Current stock is below the minimum level of @Model.MinimumStockLevel units.</p>
+                    <a asp-controller="RestockRequests" asp-action="Add" class="btn btn-sm btn-warning">
+                        <i class="bi bi-arrow-repeat me-1"></i>Request Restock
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

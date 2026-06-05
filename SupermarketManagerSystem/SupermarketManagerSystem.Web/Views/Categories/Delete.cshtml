@@ -1,0 +1,13 @@
+@model SupermarketManagerSystem.Web.ViewModels.CategoryViewModel
+@{ ViewData["Title"] = "Delete Category"; }
+<div class="container py-4">
+    <div class="card p-4 border-danger" style="max-width:500px;">
+        <h4 class="text-danger fw-bold"><i class="bi bi-trash me-2"></i>Delete Category</h4>
+        <p>Delete <strong>@Model.Name</strong>? This cannot be undone if the category has products.</p>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-flex gap-2">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a asp-action="All" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
