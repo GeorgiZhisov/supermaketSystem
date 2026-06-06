@@ -1,0 +1,137 @@
+@model SupermarketManagerSystem.Web.ViewModels.ManagerDashboardViewModel
+@{ ViewData["Title"] = "Admin Dashboard"; Layout = "~/Views/Shared/_Layout.cshtml"; }
+<div class="container py-4">
+    <h2 class="fw-bold mb-4"><i class="bi bi-speedometer2 text-success me-2"></i>Admin Dashboard</h2>
+
+    <!-- Quick Actions -->
+    <div class="row g-3 mb-4">
+        <div class="col-auto">
+            <a asp-controller="Products" asp-action="Add" asp-area="" class="btn btn-success">
+                <i class="bi bi-plus-circle me-1"></i>Add Product
+            </a>
+        </div>
+        <div class="col-auto">
+            <a asp-controller="Suppliers" asp-action="Add" asp-area="" class="btn btn-outline-primary">
+                <i class="bi bi-truck me-1"></i>Add Supplier
+            </a>
+        </div>
+        <div class="col-auto">
+            <a asp-controller="Employees" asp-action="Add" asp-area="" class="btn btn-outline-secondary">
+                <i class="bi bi-person-plus me-1"></i>Add Employee
+            </a>
+        </div>
+        <div class="col-auto">
+            <a asp-controller="RestockRequests" asp-action="All" asp-area="" class="btn btn-outline-warning">
+                <i class="bi bi-arrow-repeat me-1"></i>Restock Requests
+            </a>
+        </div>
+        <div class="col-auto">
+            <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="btn btn-outline-danger">
+                <i class="bi bi-people-fill me-1"></i>Manage Users
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-sm-6 col-xl-3">
+            <div class="card p-4 border-start border-success border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><p class="text-muted mb-1 small">Total Products</p><h3 class="fw-bold mb-0">@Model.TotalProducts</h3></div>
+                    <i class="bi bi-box-seam text-success" style="font-size:2rem;opacity:.4;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card p-4 border-start border-primary border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><p class="text-muted mb-1 small">Categories</p><h3 class="fw-bold mb-0">@Model.TotalCategories</h3></div>
+                    <i class="bi bi-tags text-primary" style="font-size:2rem;opacity:.4;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card p-4 border-start border-warning border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><p class="text-muted mb-1 small">Suppliers</p><h3 class="fw-bold mb-0">@Model.TotalSuppliers</h3></div>
+                    <i class="bi bi-truck text-warning" style="font-size:2rem;opacity:.4;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card p-4 border-start border-info border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><p class="text-muted mb-1 small">Employees</p><h3 class="fw-bold mb-0">@Model.TotalEmployees</h3></div>
+                    <i class="bi bi-people text-info" style="font-size:2rem;opacity:.4;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card p-4 border-start border-danger border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><p class="text-muted mb-1 small">Low Stock Products</p><h3 class="fw-bold mb-0 text-danger">@Model.LowStockProductsCount</h3></div>
+                    <i class="bi bi-exclamation-triangle text-danger" style="font-size:2rem;opacity:.4;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card p-4 border-start border-danger border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><p class="text-muted mb-1 small">Pending Restock</p><h3 class="fw-bold mb-0">@Model.PendingRestockRequests</h3></div>
+                    <i class="bi bi-arrow-repeat text-danger" style="font-size:2rem;opacity:.4;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card p-4 border-start border-success border-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div><p class="text-muted mb-1 small">Inventory Value</p><h3 class="fw-bold mb-0">@Model.TotalInventoryValue.ToString("C")</h3></div>
+                    <i class="bi bi-currency-exchange text-success" style="font-size:2rem;opacity:.4;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.LowStockProducts.Any())
+    {
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Low Stock Alerts</div>
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead><tr><th>Product</th><th>Category</th><th>Stock</th><th>Min. Level</th><th></th></tr></thead>
+                    <tbody>
+                        @foreach (var p in Model.LowStockProducts)
+                        {
+                            <tr>
+                                <td>@p.Name</td>
+                                <td>@p.CategoryName</td>
+                                <td><span class="badge bg-danger">@p.StockQuantity</span></td>
+                                <td>@p.MinimumStockLevel</td>
+                                <td><a asp-controller="RestockRequests" asp-action="Add" asp-area="" class="btn btn-sm btn-warning">Restock</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-header fw-bold"><i class="bi bi-clock-history me-2"></i>Recent Restock Requests</div>
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead><tr><th>Product</th><th>Qty</th><th>Status</th><th>Date</th></tr></thead>
+                <tbody>
+                    @foreach (var r in Model.RecentRestockRequests)
+                    {
+                        <tr>
+                            <td>@r.ProductName</td>
+                            <td>@r.RequestedQuantity</td>
+                            <td><span class="badge bg-warning text-dark">@r.Status</span></td>
+                            <td>@r.RequestedOn.ToString("dd MMM yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,114 @@
+@model List<SupermarketManagerSystem.Web.Areas.Admin.Controllers.UserManagementViewModel>
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-people-fill me-2"></i>User Management</h2>
+        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Registered</th>
+                        <th>Roles</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr class="@(user.IsLocked ? "table-danger" : "")">
+                            <td class="fw-semibold">@user.FirstName @user.LastName</td>
+                            <td>@user.Email</td>
+                            <td>@user.RegisteredOn.ToString("dd MMM yyyy")</td>
+                            <td>
+                                @foreach (var role in user.Roles)
+                                {
+                                    <span class="badge bg-primary me-1">@role</span>
+                                }
+                                @if (!user.Roles.Any())
+                                {
+                                    <span class="badge bg-secondary">User</span>
+                                }
+                            </td>
+                            <td>
+                                @if (user.IsLocked)
+                                {
+                                    <span class="badge bg-danger"><i class="bi bi-lock-fill me-1"></i>Banned</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Active</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm">
+                                    @if (user.IsLocked)
+                                    {
+                                        <form asp-action="Unban" asp-route-id="@user.Id" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-success btn-sm" title="Unban">
+                                                <i class="bi bi-unlock-fill"></i> Unban
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="Ban" asp-route-id="@user.Id" method="post" class="d-inline"
+                                              onsubmit="return confirm('Ban @user.Email?')">
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Ban">
+                                                <i class="bi bi-lock-fill"></i> Ban
+                                            </button>
+                                        </form>
+                                    }
+
+                                    @if (user.Roles.Contains("Administrator"))
+                                    {
+                                        <form asp-action="RemoveAdmin" asp-route-id="@user.Id" method="post" class="d-inline"
+                                              onsubmit="return confirm('Remove admin from @user.Email?')">
+                                            <button type="submit" class="btn btn-warning btn-sm" title="Remove Admin">
+                                                <i class="bi bi-shield-x"></i> Remove Admin
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="MakeAdmin" asp-route-id="@user.Id" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-outline-primary btn-sm" title="Make Admin">
+                                                <i class="bi bi-shield-check"></i> Make Admin
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
